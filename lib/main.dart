@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: primary),
         useMaterial3: true,
       ),
-      home: const PokemonScreenDetails(),
+      home: const Mainscreen(),
     );
   }
 }

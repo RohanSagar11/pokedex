@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:pokedex/Logic/mainprovider.dart';
+import 'package:pokedex/Screens/menu.dart';
+import 'package:pokedex/Screens/pokemonscreendetails.dart';
 import 'package:pokedex/constants/colors.dart';
 
 class Mainscreen extends StatefulWidget {
@@ -25,7 +27,7 @@ class _MainscreenState extends State<Mainscreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Image.asset("pokeball.png", height: 50,width: 50,),
+                    Image.asset("pokeball1.png", height: 50,width: 50,),
                     SizedBox(width: 10,),
                     Text("Pokèdèx", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25, color: Colors.white, fontFamily: "EricaOne-Regular"),)
                   ],
@@ -57,7 +59,26 @@ class _MainscreenState extends State<Mainscreen> {
                 Container(
                   decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(50)),
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: (){
+                      final RenderBox button = context.findRenderObject() as RenderBox;
+                      final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+                      final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
+                      showMenu(context: context, position: RelativeRect.fromLTRB(
+                        position.dx,
+                        position.dy + button.size.height,
+                        overlay.size.width - position.dx - button.size.width,
+                        0,
+                      ), items: [
+                        const PopupMenuItem(
+                        value: 'Option 1',
+                        child: Text('Option 1'),
+                      ),
+                      const PopupMenuItem(
+                      value: 'Option 2',
+                      child: Text('Option 2'),
+                      ),
+                      ]);
+                    },
                     icon: Icon(
                       Icons.menu,
                       color: Colors.red,
@@ -85,57 +106,67 @@ class _MainscreenState extends State<Mainscreen> {
                     padding: const EdgeInsets.all(5.0),
                     child: GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 5, crossAxisSpacing: 5,), itemBuilder: (context, index){
-                      return Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          gradient: const LinearGradient(
+
+                      return GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      PokemonScreenDetails()));
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            gradient: const LinearGradient(
 
 
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.white, Colors.white, Colors.grey]),
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.white, Colors.white, Colors.grey]),
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
 
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 5),
-                                child: Text(
-                                  "#999",
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.grey[700],
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: Text(
+                                    "#999",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey[700],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 5,),
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[600],
-                                borderRadius: BorderRadius.circular(10),
+                              SizedBox(height: 5,),
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[600],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Image.asset('pokeball1.png'),
                               ),
-                              child: Image.asset('pokeball.png'),
-                            ),
-                            SizedBox(height: 2,),
-                            Text(
-                              "pokemon name",
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
+                              SizedBox(height: 2,),
+                              Text(
+                                "pokemon name",
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
 
-                          ],
+                            ],
+                          ),
                         ),
                       );
                     }),
