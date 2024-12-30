@@ -1,9 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:pokedex/Logic/mainprovider.dart';
 import 'package:pokedex/Screens/menu.dart';
 import 'package:pokedex/Screens/pokemonscreendetails.dart';
 import 'package:pokedex/constants/colors.dart';
+import 'package:provider/provider.dart';
+
+import '../Models/mainscreenmodel.dart';
 
 class Mainscreen extends StatefulWidget {
   const Mainscreen({super.key});
@@ -13,10 +15,27 @@ class Mainscreen extends StatefulWidget {
 }
 
 class _MainscreenState extends State<Mainscreen> {
+  List<Map<String, String>> fetchnames = [];
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+
+    void fetch() async {
+      List<PokemonResult> pokemonnames = await MainProvider().fetchPokemonList();
+
+      setState(() {
+        // Map each PokemonResult to a Map containing name and URL
+        fetchnames = pokemonnames.map((pokemon) {
+          return {'name': pokemon.name, 'url': pokemon.url};
+        }).toList();
+      });
+      // Print the first item from the list as a map
+      // Output: {name: bulbasaur, url: https://pokeapi.co/api/v2/pokemon/1/}
+    }
+
+    fetch();
+
+    return Scaffold(
       backgroundColor: primary,
       body: Center(
         child: Container(
@@ -27,152 +46,176 @@ class _MainscreenState extends State<Mainscreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Image.asset("pokeball1.png", height: 50,width: 50,),
-                    SizedBox(width: 10,),
-                    Text("Pokèdèx", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25, color: Colors.white, fontFamily: "EricaOne-Regular"),)
+                    Image.asset(
+                      "assets/pokeball1.png",
+                      height: 50,
+                      width: 50,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "Pokèdèx",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                          color: Colors.white,
+                          fontFamily: "EricaOne-Regular"),
+                    )
                   ],
                 ),
-
               ),
               Padding(
                 padding: const EdgeInsets.all(18.0),
                 child: Row(
                   children: [
                     SizedBox(
-                        height: 50,
-                    width: 250,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.search, color: primary,),
-                            hintText: 'Search',
-                            filled: true,
-                            iconColor: primary,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                              borderSide: BorderSide.none,
-                            ),
+                      height: 50,
+                      width: 250,
+                      child: TextField(
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: primary,
                           ),
-
-                        ),),
-                SizedBox(width: 5,),
-                Container(
-                  decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(50)),
-                  child: IconButton(
-                    onPressed: (){
-                      final RenderBox button = context.findRenderObject() as RenderBox;
-                      final RenderBox overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
-                      final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
-                      showMenu(context: context, position: RelativeRect.fromLTRB(
-                        position.dx,
-                        position.dy + button.size.height,
-                        overlay.size.width - position.dx - button.size.width,
-                        0,
-                      ), items: [
-                        const PopupMenuItem(
-                        value: 'Option 1',
-                        child: Text('Option 1'),
+                          hintText: 'Search',
+                          filled: true,
+                          iconColor: primary,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
                       ),
-                      const PopupMenuItem(
-                      value: 'Option 2',
-                      child: Text('Option 2'),
-                      ),
-                      ]);
-                    },
-                    icon: Icon(
-                      Icons.menu,
-                      color: Colors.red,
-                      size: 30,
                     ),
-                    color: Colors.red,
-                    splashColor: Colors.white,
-                    highlightColor: Colors.red[100],
-                  ),
-                ),
+                    SizedBox(
+                      width: 1,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(50)),
+                      child: IconButton(
+                        onPressed: (){
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                backgroundColor: Colors.transparent,
+                                child: Menu(),
+                              );
+                            },
+                          );
+                        },
+                        icon: Icon(
+                          Icons.menu,
+                          color: Colors.red,
+                          size: 30,
+                        ),
+                        color: Colors.red,
+                        splashColor: Colors.white,
+                        highlightColor: Colors.red[100],
+                      ),
+                    ),
                   ],
-
                 ),
               ),
               SizedBox(
                 height: 360,
                 width: 320,
                 child: Container(
-                  decoration: BoxDecoration(
-
-                    boxShadow: [BoxShadow(color: Colors.grey),BoxShadow(color: Colors.grey),BoxShadow(color: Colors.grey),BoxShadow(color: Colors.grey)],
-
-                      color: Colors.white, borderRadius:  BorderRadius.circular(10)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 5, crossAxisSpacing: 5,), itemBuilder: (context, index){
-
-                      return GestureDetector(
-                        onTap: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      PokemonScreenDetails()));
-                        },
-                        child: Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            gradient: const LinearGradient(
-
-
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [Colors.white, Colors.white, Colors.grey]),
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
+                    decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(color: Colors.grey),
+                          BoxShadow(color: Colors.grey),
+                          BoxShadow(color: Colors.grey),
+                          BoxShadow(color: Colors.grey)
+                        ],
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: fetchnames.isEmpty?Center(child: CircularProgressIndicator()):GridView.builder(
+                          gridDelegate:
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 5,
+                            crossAxisSpacing: 5,
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Text(
-                                    "#999",
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 5,),
-                              Container(
-                                width: 60,
-                                height: 60,
+                          itemCount: fetchnames.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            PokemonScreenDetails(number: "${fetchnames[index]['url'].toString()}",)));
+                              },
+                              child: Container(
+                                width: 100,
+                                height: 100,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[600],
+                                  border: Border.all(color: Colors.grey),
+                                  gradient: const LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.white,
+                                        Colors.white,
+                                        Colors.grey
+                                      ]),
+                                  color: Colors.grey[300],
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Image.asset('pokeball1.png'),
-                              ),
-                              SizedBox(height: 2,),
-                              Text(
-                                "pokemon name",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment
+                                      .center,
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Padding(
+                                        padding:
+                                        const EdgeInsets.only(right: 5),
+                                        child: Text(
+                                          "#${index.toString()}",
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+
+                                        borderRadius:
+                                        BorderRadius.circular(10),
+                                      ),
+                                      child: Image.asset('assets/squirt.png'),
+                                    ),
+                                    SizedBox(
+                                      height: 2,
+                                    ),
+                                    Text(
+                                      "${fetchnames[index]['name'].toString().capitalize()}",
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-                  )
-
-                ),
+                            );
+                          })
+                    )),
               )
             ],
           ),
@@ -185,5 +228,11 @@ class _MainscreenState extends State<Mainscreen> {
         ),
       ),
     );
+  }
+}
+
+extension StringExtensions on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
   }
 }

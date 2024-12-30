@@ -2,21 +2,42 @@
 
 import 'package:flutter/material.dart';
 import 'package:pokedex/Screens/mainscreen.dart';
-
+import 'package:pokedex/Logic/mainprovider.dart';
+import '../Models/mainscreenmodel.dart';
 import '../constants/colors.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 class PokemonScreenDetails extends StatefulWidget {
-  const PokemonScreenDetails({super.key});
+  final String number;
+   PokemonScreenDetails({super.key, required this.number,});
 
   @override
   State<PokemonScreenDetails> createState() => _PokemonScreenDetailsState();
 }
 
 class _PokemonScreenDetailsState extends State<PokemonScreenDetails> {
+  List<PokemonDetails> ability = [];
+  String get number => widget.number;
+
+
   @override
   Widget build(BuildContext context) {
+
+    void fetch() async {
+      try {
+        List<PokemonDetails> pokemonnames = await MainProvider().fetchPokemonDetail(number);
+        setState(() {
+          ability = pokemonnames;
+        });
+        ability = pokemonnames;
+        print("Fetched ${pokemonnames.length} Pokémon abilities.");
+      } catch (e) {
+        print("Error fetching Pokémon details: $e");
+      }
+    }
+
     var size = MediaQuery.sizeOf(context);
+    fetch();
     return  Scaffold(
       backgroundColor: primary,
       body: Center(
@@ -48,7 +69,7 @@ class _PokemonScreenDetailsState extends State<PokemonScreenDetails> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text("Pokemon Name", style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 25,),),
                     ),
-                  SizedBox(width: 19,),
+                  SizedBox(width: 3,),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: Text("#999", style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 17,),),
@@ -61,7 +82,7 @@ class _PokemonScreenDetailsState extends State<PokemonScreenDetails> {
             ),
           Padding(
             padding: const EdgeInsets.only(left: 120.0),
-            child: Image.asset("pokeball.png"),
+            child: Image.asset("assets/pokeball.png"),
           ),
           Padding(
             padding: const EdgeInsets.only(top: 210),
@@ -328,8 +349,8 @@ class _PokemonScreenDetailsState extends State<PokemonScreenDetails> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            Chip(label: Text('Water')),
-                            Chip(label: Text('Grass')),
+                            Chip(label: Text("${ability[0].abilityname1}")),
+                            Chip(label: Text('${ability[1].abilityname1}')),
                           ],
                         ),
                       ),
@@ -341,7 +362,7 @@ class _PokemonScreenDetailsState extends State<PokemonScreenDetails> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 60),
-            child: Image.asset("pngegg(2).png",scale: 3,),
+            child: Image.asset("assets/squirt.png",scale: 3,),
           ),
 
           ],
