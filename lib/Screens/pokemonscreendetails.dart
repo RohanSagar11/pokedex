@@ -41,7 +41,7 @@ class _PokemonScreenDetailsState extends State<PokemonScreenDetails> {
     return  Scaffold(
       backgroundColor: primary,
       body: Center(
-        child: Stack(
+        child: ability.isEmpty? CircularProgressIndicator(): Stack(
           alignment: Alignment.topCenter,
 
           children: [
